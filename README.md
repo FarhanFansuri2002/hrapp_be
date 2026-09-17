@@ -1,6 +1,6 @@
 # HR App Server
 
-Backend REST API untuk aplikasi Human Resources, dibuat menggunakan Go dan MySQL.
+Backend REST API untuk aplikasi Human Resources, dibuat menggunakan Node.js dan MySQL.
 
 ## Fitur Saat Ini
 
@@ -11,7 +11,7 @@ Backend REST API untuk aplikasi Human Resources, dibuat menggunakan Go dan MySQL
 
 ## Prasyarat
 
-- Go `1.27.1` atau versi yang kompatibel dengan `go.mod`
+- Node.js `22` atau versi yang kompatibel
 - MySQL 8 atau versi yang kompatibel
 
 ## Setup Database
@@ -36,13 +36,23 @@ Server membaca environment variable berikut:
 
 | Variable | Default | Keterangan |
 | --- | --- | --- |
-| `SERVER_ADDRESS` | `:8080` | Alamat dan port HTTP server |
-| `MYSQL_DSN` | `root:@tcp(127.0.0.1:3306)/hr_app?parseTime=true` | Connection string MySQL |
+| `PORT` | `8080` | Port HTTP server |
+| `SERVER_ADDRESS` | `:8080` | Fallback port untuk kompatibilitas konfigurasi lama |
+| `MYSQL_DSN` | - | Format Go lama, tetap didukung |
+| `MYSQL_HOST` | `127.0.0.1` | Host MySQL |
+| `MYSQL_PORT` | `3306` | Port MySQL |
+| `MYSQL_USER` | `root` | User MySQL |
+| `MYSQL_PASSWORD` | kosong | Password MySQL |
+| `MYSQL_DATABASE` | `hr_app` | Nama database |
+| `MYSQL_URL` | - | URL koneksi MySQL, jika ingin memakai satu variable |
 
 Contoh konfigurasi PowerShell:
 
 ```powershell
-$env:MYSQL_DSN = "root:password@tcp(127.0.0.1:3306)/hr_app?parseTime=true"
+$env:MYSQL_USER = "root"
+$env:MYSQL_PASSWORD = "password"
+$env:MYSQL_DATABASE = "hr_app"
+$env:PORT = "8080"
 $env:SERVER_ADDRESS = ":8080"
 ```
 
@@ -50,8 +60,8 @@ $env:SERVER_ADDRESS = ":8080"
 
 ```bash
 cd Server
-go mod download
-go run ./cmd/api
+npm install
+npm start
 ```
 
 Server berjalan di `http://localhost:8080`.
@@ -101,12 +111,7 @@ curl http://localhost:8080/api/v1/employees
 ## Struktur Utama
 
 ```text
-cmd/api/                 # Entry point aplikasi
-internal/config/         # Pembacaan konfigurasi
-internal/handler/        # HTTP handler dan serialisasi JSON
-internal/model/          # Model response API
-internal/repository/     # Query MySQL
-internal/router/         # Route dan middleware
-internal/service/        # Logika bisnis
+src/server.js            # Entry point, route, middleware, dan query MySQL
+package.json             # Script dan dependency Node.js
 migrations/              # SQL migration
 ```
